@@ -55,39 +55,6 @@ ALTER SEQUENCE public.newurls_id_seq OWNED BY public.newurls.id;
 
 
 --
--- Name: ranking; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.ranking (
-    id integer NOT NULL,
-    user_id integer NOT NULL,
-    user_name character varying(255) NOT NULL,
-    links_count numeric DEFAULT 0 NOT NULL,
-    views_count numeric DEFAULT 0 NOT NULL
-);
-
-
---
--- Name: ranking_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.ranking_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: ranking_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.ranking_id_seq OWNED BY public.ranking.id;
-
-
---
 -- Name: sessions; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -128,6 +95,8 @@ CREATE TABLE public.users (
     name character varying(255) NOT NULL,
     email character varying(255) NOT NULL,
     passwordhash character varying(255) NOT NULL,
+    links_count numeric DEFAULT 0 NOT NULL,
+    views_count numeric DEFAULT 0 NOT NULL,
     createdat timestamp without time zone DEFAULT now() NOT NULL
 );
 
@@ -160,13 +129,6 @@ ALTER TABLE ONLY public.newurls ALTER COLUMN id SET DEFAULT nextval('public.newu
 
 
 --
--- Name: ranking id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.ranking ALTER COLUMN id SET DEFAULT nextval('public.ranking_id_seq'::regclass);
-
-
---
 -- Name: sessions id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -182,12 +144,6 @@ ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_
 
 --
 -- Data for Name: newurls; Type: TABLE DATA; Schema: public; Owner: -
---
-
-
-
---
--- Data for Name: ranking; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 
@@ -209,13 +165,6 @@ ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_
 --
 
 SELECT pg_catalog.setval('public.newurls_id_seq', 1, false);
-
-
---
--- Name: ranking_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('public.ranking_id_seq', 1, false);
 
 
 --
@@ -257,22 +206,6 @@ ALTER TABLE ONLY public.newurls
 
 
 --
--- Name: ranking ranking_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.ranking
-    ADD CONSTRAINT ranking_pkey PRIMARY KEY (id);
-
-
---
--- Name: ranking ranking_user_name_key; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.ranking
-    ADD CONSTRAINT ranking_user_name_key UNIQUE (user_name);
-
-
---
 -- Name: sessions sessions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -289,6 +222,14 @@ ALTER TABLE ONLY public.sessions
 
 
 --
+-- Name: users users_email_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT users_email_key UNIQUE (email);
+
+
+--
 -- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -302,14 +243,6 @@ ALTER TABLE ONLY public.users
 
 ALTER TABLE ONLY public.newurls
     ADD CONSTRAINT newurls_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id);
-
-
---
--- Name: ranking ranking_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.ranking
-    ADD CONSTRAINT ranking_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id);
 
 
 --

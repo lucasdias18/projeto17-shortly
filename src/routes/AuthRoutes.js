@@ -7,7 +7,7 @@ import { userSchema } from '../schema/AuthSchema.js'
 const authRouter = Router()
 
 authRouter.post("/signup", signUp)
-authRouter.get("/signin", login)
+authRouter.post("/signin", login)
 // authRouter.put("/customers/:id", validateSchema(userSchema), putCustomers)
 
 // validateSchema(validateSchema)

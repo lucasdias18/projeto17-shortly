@@ -14,21 +14,20 @@ export async function postURL(req, res) {
 
         if (findSession.rowCount === 0) return res.status(401).send('Faça o login')
 
-        const user = await db.query(`SELECT * FROM users WHERE id = $1`, [findSession.user_id])
+        const user = await db.query(`SELECT * FROM users WHERE id = $1`, [findSession.rows[0].user_id])
 
-        shortUrl = await nanoid()
+        const shortUrl = await nanoid()
 
         const newURL = await db.query(
-            `INSERT INTO newurls (user_id, "shortUrl", url)
+            `INSERT INTO newurls (user_id, shortUrl, url)
             VALUES ($1, $2, $3);`
-            , [user.id, shortUrl, url])
+            , [user.rows[0].id, shortUrl, url])
+        
+        const id = await db.query(`SELECT id FROM newurls WHERE url = $1`, [url])
+        console.log(id.rows)
 
-        const viewUrl = await db.query(
-            `INSERT INTO viewurls (url_id, views)
-            VALUES ($1);`
-            , [newURL.id])
 
-        res.status(201).send({ id, shortUrl })
+        res.status(201).send({ ...id.rows[0], shortUrl })
 
     }
     catch (error) {
@@ -63,24 +62,56 @@ export async function openUrl(req, res) {
     try {
         if (!shortUrl) return res.status(400).send('È necessário informar um identificador.')
 
-        const findUrl = await db.query(`SELECT * FROM newurls WHERE "shortUrl" = $1`, [shortUrl])
+        const findUrl = await db.query(`SELECT * FROM newurls WHERE shortUrl = $1`, [shortUrl])
 
         if (findUrl.rowCount === 0) return res.sendStatus(404)
+        console.log(findUrl.rows[0].views)
 
-        const newView = findUrl.views + 1
+        const newView = Number(findUrl.rows[0].views) + 1
+        console.log(newView)
 
-        await db.query(`UPDATE  newurls SET views=$1 WHERE id = $2`, [newView, findUrl.id])
+        await db.query(`UPDATE newurls SET views=$1 WHERE id = $2`, [newView, findUrl.rows[0].id])
 
-        // const stockGame = await db.query(
-        //     `UPDATE games
-        //      SET "stockTotal" = $1
-        //      WHERE id = $2;`, [quantityGame, gameId]
-        // )
-
-        res.redirect([302], findUrl.url)
+        res.redirect(302, findUrl.rows[0].url)
 
     }
     catch (error) {
         res.status(500).send(error.message)
     }
+}
+
+export async function deleteURL(req, res) {
+
+    const { id } = req.params
+    const { authorization } = req.headers
+    const token = authorization?.replace('Bearer ', '')
+
+
+    try {
+
+        const findSession = await db.query(`SELECT * FROM sessions WHERE token=$1`, [token])
+
+        if (findSession.rowCount === 0) return res.status(401).send('Faça o login')
+
+        const user = await db.query(`SELECT * FROM users WHERE id = $1`, [findSession.rows[0].user_id])
+
+        const shortUrl = await db.query(`SELECT * FROM newurls WHERE id = $1`, [id])
+
+        if (shortUrl.rowCount === 0) return res.sendStatus(404)
+
+        // console.log(user.rows[0].id)
+        // console.log(shortUrl.rows)
+
+        if (user.rows[0].id !== shortUrl.rows[0].user_id) return res.sendStatus(401)
+
+        const deleteURL = await db.query(`DELETE FROM newurls WHERE id = $1`, [id])
+
+
+        res.status(204).send('url deletada!')
+
+    }
+    catch (error) {
+        res.status(500).send(error.message)
+    }
+
 }
