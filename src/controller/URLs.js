@@ -52,7 +52,7 @@ export async function getUrlId(req, res) {
 
         if (findUrl.rowCount === 0) return res.sendStatus(404)
 
-        res.send(findUrl.rows[0])
+        res.send(findUrl.rows)
 
     }
     catch (error) {
