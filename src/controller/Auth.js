@@ -17,7 +17,7 @@ export async function signUp(req, res) {
         console.log('teste')
 
         const newClient = await db.query(
-            `INSERT INTO users (email, name, passwordHash)
+            `INSERT INTO users (email, name, "passwordHash")
             VALUES ($1, $2, $3);`
             , [email, name, passwordHash])
 
@@ -38,7 +38,7 @@ export async function login(req, res) {
 
         const existsUser = await db.query(`SELECT * FROM users WHERE email = $1`, [email])
 
-        if(existsUser.rowCount === 0 || bcrypt.compareSync(password, existsUser.rows[0].passwordhash) === false)
+        if(existsUser.rowCount === 0 || bcrypt.compareSync(password, existsUser.rows[0].passwordHash) === false)
         return res.status(401).send("Usuário ou senha incorretos!")
 
         const token = uuid();
@@ -70,7 +70,7 @@ export async function getUser(req, res) {
         const findUser = await db.query(`SELECT * FROM users WHERE id = $1`, [findSession.rows[0].user_id])
 
         const findUrls = await db.query(
-            `SELECT id, shortUrl, url, views AS "visitCount"
+            `SELECT id, "shortUrl", url, views AS "visitCount"
              FROM newurls
              WHERE user_id = $1`
              , [findUser.rows[0].id])

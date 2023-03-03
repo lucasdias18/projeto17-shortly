@@ -19,7 +19,7 @@ export async function postURL(req, res) {
         const shortUrl = await nanoid()
 
         const newURL = await db.query(
-            `INSERT INTO newurls (user_id, shortUrl, url)
+            `INSERT INTO newurls (user_id, "shortUrl", url)
             VALUES ($1, $2, $3);`
             , [user.rows[0].id, shortUrl, url])
 
@@ -48,7 +48,7 @@ export async function getUrlId(req, res) {
     try {
         if (!id) return res.status(400).send('È necessário informar um id.')
 
-        const findUrl = await db.query(`SELECT id, shortUrl, url FROM newurls WHERE id = $1`, [id])
+        const findUrl = await db.query(`SELECT id, "shortUrl", url FROM newurls WHERE id = $1`, [id])
 
         if (findUrl.rowCount === 0) return res.sendStatus(404)
 
@@ -67,7 +67,7 @@ export async function openUrl(req, res) {
     try {
         if (!shortUrl) return res.status(400).send('È necessário informar um identificador.')
 
-        const findUrl = await db.query(`SELECT * FROM newurls WHERE shortUrl = $1`, [shortUrl])
+        const findUrl = await db.query(`SELECT * FROM newurls WHERE "shortUrl" = $1`, [shortUrl])
 
         if (findUrl.rowCount === 0) return res.sendStatus(404)
 
