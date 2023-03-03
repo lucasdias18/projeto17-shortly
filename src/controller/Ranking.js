@@ -4,7 +4,7 @@ export async function getRanking(req, res) {
     
 
     try{
-        const users = await db.query(`SELECT id, name, links_count, views_count FROM users ORDER BY views_count DESC LIMIT 10`)
+        const users = await db.query(`SELECT id, name, links_count AS linksCount, views_count AS visitCount FROM users ORDER BY views_count DESC LIMIT 10`)
 
         res.send(users.rows)
     }
