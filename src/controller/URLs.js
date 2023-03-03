@@ -22,9 +22,15 @@ export async function postURL(req, res) {
             `INSERT INTO newurls (user_id, shortUrl, url)
             VALUES ($1, $2, $3);`
             , [user.rows[0].id, shortUrl, url])
+
+        const linkCount = Number(user.rows[0].links_count) + 1
+        console.log(linkCount)
+
+        await db.query(`UPDATE users SET links_count = $1 WHERE id = $2`, [linkCount, user.rows[0].id])
+
         
         const id = await db.query(`SELECT id FROM newurls WHERE url = $1`, [url])
-        console.log(id.rows)
+        // console.log(id.rows)
 
 
         res.status(201).send({ ...id.rows[0], shortUrl })
@@ -65,12 +71,19 @@ export async function openUrl(req, res) {
         const findUrl = await db.query(`SELECT * FROM newurls WHERE shortUrl = $1`, [shortUrl])
 
         if (findUrl.rowCount === 0) return res.sendStatus(404)
-        console.log(findUrl.rows[0].views)
+        // console.log(findUrl.rows[0].views)
 
         const newView = Number(findUrl.rows[0].views) + 1
-        console.log(newView)
+        // console.log(newView)
 
         await db.query(`UPDATE newurls SET views=$1 WHERE id = $2`, [newView, findUrl.rows[0].id])
+
+        const user = await db.query(`SELECT * FROM users WHERE id = $1`, [findUrl.rows[0].user_id])
+
+        const visitCount = Number(user.rows[0].views_count) + 1
+        console.log(visitCount)
+
+        await db.query(`UPDATE users SET views_count = $1 WHERE id = $2`, [visitCount, user.rows[0].id])
 
         res.redirect(302, findUrl.rows[0].url)
 

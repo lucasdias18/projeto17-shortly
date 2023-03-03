@@ -58,3 +58,32 @@ export async function login(req, res) {
         res.status(500).send(error.message)
     }
 }
+
+export async function getUser(req, res) {
+
+    const { authorization } = req.headers
+    const token = authorization?.replace('Bearer ', '')
+
+    try {
+        const findSession = await db.query(`SELECT * FROM sessions WHERE token=$1`, [token])
+
+        if (findSession.rowCount === 0) return res.status(401).send('Faça o login')
+
+        const findUser = await db.query(`SELECT * FROM users WHERE id = $1`, [findSession.rows[0].user_id])
+
+        const findUrls = await db.query(`SELECT * FROM newurls WHERE user_id = $1`, [findUser.rows[0].id])
+        console.log(findUrls.rows)
+
+        // const shortenedUrls = 
+
+        res.send(
+                { id: findUser.rows[0].id,
+                  name: findUser.rows[0].name,
+                  visitCount: findUser.rows[0].views_count,
+                  shortenedUrls: findUrls.rows}
+            )
+    }
+    catch (error) {
+        res.status(500).send(error.message)
+    }
+}
