@@ -35,9 +35,9 @@ export async function login(req, res) {
     const {email, password} = req.body
 
     try {
-        
+
         const existsUser = await db.query(`SELECT * FROM users WHERE email = $1`, [email])
-        console.log(existsUser.rows[0].passwordhash)
+        // console.log(existsUser.rows[0].passwordhash)
 
         if(existsUser.rowCount === 0 || bcrypt.compareSync(password, existsUser.rows[0].passwordhash) === false)
         return res.status(401).send("Usuário ou senha incorretos!")
@@ -51,7 +51,7 @@ export async function login(req, res) {
             , [existsUser.rows[0].id, token]) 
         
 
-        res.send(token)
+        res.send({ token })
 
     }
     catch (error) {
