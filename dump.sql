@@ -27,10 +27,10 @@ SET default_table_access_method = heap;
 CREATE TABLE public.newurls (
     id integer NOT NULL,
     user_id integer NOT NULL,
-    shorturl character varying(255) NOT NULL,
+    "shortUrl" character varying(255) NOT NULL,
     url text NOT NULL,
     views numeric DEFAULT 0 NOT NULL,
-    createdat timestamp without time zone DEFAULT now() NOT NULL
+    "createdAt" timestamp without time zone DEFAULT now() NOT NULL
 );
 
 
@@ -62,7 +62,7 @@ CREATE TABLE public.sessions (
     id integer NOT NULL,
     user_id integer NOT NULL,
     token character varying(255) NOT NULL,
-    createdat timestamp without time zone DEFAULT now() NOT NULL
+    "createdAt" timestamp without time zone DEFAULT now() NOT NULL
 );
 
 
@@ -94,10 +94,10 @@ CREATE TABLE public.users (
     id integer NOT NULL,
     name character varying(255) NOT NULL,
     email character varying(255) NOT NULL,
-    passwordhash character varying(255) NOT NULL,
+    "passwordHash" character varying(255) NOT NULL,
     links_count numeric DEFAULT 0 NOT NULL,
     views_count numeric DEFAULT 0 NOT NULL,
-    createdat timestamp without time zone DEFAULT now() NOT NULL
+    "createdAt" timestamp without time zone DEFAULT now() NOT NULL
 );
 
 
@@ -190,11 +190,11 @@ ALTER TABLE ONLY public.newurls
 
 
 --
--- Name: newurls newurls_shorturl_key; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: newurls newurls_shortUrl_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.newurls
-    ADD CONSTRAINT newurls_shorturl_key UNIQUE (shorturl);
+    ADD CONSTRAINT "newurls_shortUrl_key" UNIQUE ("shortUrl");
 
 
 --
