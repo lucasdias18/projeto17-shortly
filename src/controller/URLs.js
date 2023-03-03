@@ -3,7 +3,7 @@ import { nanoid } from 'nanoid'
 
 export async function postURL(req, res) {
 
-    const url = req.body
+    const { url } = req.body
     const { authorization } = req.headers
     const token = authorization?.replace('Bearer ', '')
 
@@ -30,7 +30,6 @@ export async function postURL(req, res) {
 
         
         const id = await db.query(`SELECT id FROM newurls WHERE url = $1`, [url])
-        // console.log(id.rows)
 
 
         res.status(201).send({ ...id.rows[0], shortUrl })
@@ -71,10 +70,8 @@ export async function openUrl(req, res) {
         const findUrl = await db.query(`SELECT * FROM newurls WHERE shortUrl = $1`, [shortUrl])
 
         if (findUrl.rowCount === 0) return res.sendStatus(404)
-        // console.log(findUrl.rows[0].views)
 
         const newView = Number(findUrl.rows[0].views) + 1
-        // console.log(newView)
 
         await db.query(`UPDATE newurls SET views=$1 WHERE id = $2`, [newView, findUrl.rows[0].id])
 
@@ -111,9 +108,6 @@ export async function deleteURL(req, res) {
         const shortUrl = await db.query(`SELECT * FROM newurls WHERE id = $1`, [id])
 
         if (shortUrl.rowCount === 0) return res.sendStatus(404)
-
-        // console.log(user.rows[0].id)
-        // console.log(shortUrl.rows)
 
         if (user.rows[0].id !== shortUrl.rows[0].user_id) return res.sendStatus(401)
 

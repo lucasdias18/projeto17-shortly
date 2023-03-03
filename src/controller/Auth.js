@@ -37,13 +37,11 @@ export async function login(req, res) {
     try {
 
         const existsUser = await db.query(`SELECT * FROM users WHERE email = $1`, [email])
-        // console.log(existsUser.rows[0].passwordhash)
 
         if(existsUser.rowCount === 0 || bcrypt.compareSync(password, existsUser.rows[0].passwordhash) === false)
         return res.status(401).send("Usuário ou senha incorretos!")
 
         const token = uuid();
-        // console.log(token)
 
         await db.query(
             `INSERT INTO sessions (user_id, token)
@@ -78,7 +76,6 @@ export async function getUser(req, res) {
              , [findUser.rows[0].id])
         console.log(findUrls.rows)
 
-        // const shortenedUrls = 
 
         res.send(
                 { id: findUser.rows[0].id,
