@@ -49,7 +49,7 @@ export async function getUrlId(req, res) {
     try {
         if (!id) return res.status(400).send('È necessário informar um id.')
 
-        const findUrl = await db.query(`SELECT * FROM newurls WHERE id = $1`, [id])
+        const findUrl = await db.query(`SELECT id, shortUrl, url FROM newurls WHERE id = $1`, [id])
 
         if (findUrl.rowCount === 0) return res.sendStatus(404)
 

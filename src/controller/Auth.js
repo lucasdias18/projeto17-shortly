@@ -71,7 +71,11 @@ export async function getUser(req, res) {
 
         const findUser = await db.query(`SELECT * FROM users WHERE id = $1`, [findSession.rows[0].user_id])
 
-        const findUrls = await db.query(`SELECT * FROM newurls WHERE user_id = $1`, [findUser.rows[0].id])
+        const findUrls = await db.query(
+            `SELECT id, shortUrl, url, views AS "visitCount"
+             FROM newurls
+             WHERE user_id = $1`
+             , [findUser.rows[0].id])
         console.log(findUrls.rows)
 
         // const shortenedUrls = 
