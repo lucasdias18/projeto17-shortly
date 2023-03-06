@@ -15,6 +15,6 @@ app.use([authRouter])
 app.use([urlRouter])
 app.use([rankingRouter])
 
-const PORT = 5000
+const port = process.env.PORT || 5000
 
-app.listen(PORT, () => console.log("subiu!!"))
+app.listen(port, () => console.log(`Server running in port: ${port}`))
